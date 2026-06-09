@@ -11,9 +11,9 @@
 	</parent>
 
 	<groupId>com.library</groupId>
-	<artifactId>library-api</artifactId>
+	<artifactId>library-system</artifactId>
 	<version>1.0.0</version>
-	<name>library-api</name>
+	<name>library-system</name>
 	<description>Library Management System – Hexagonal Architecture + DDD</description>
 
 	<properties>
