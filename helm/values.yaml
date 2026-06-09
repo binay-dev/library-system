@@ -1,0 +1,131 @@
+# =========================
+# LIBRARY SYSTEM - HELM VALUES
+# =========================
+
+replicaCount: 2
+
+
+# =========================
+# IMAGE CONFIGURATION
+# =========================
+
+image:
+  repository: your-dockerhub-user/library-system
+  pullPolicy: Always
+  tag: "v1"
+
+imagePullSecrets: []
+
+
+# =========================
+# NAME OVERRIDES
+# =========================
+
+nameOverride: ""
+fullnameOverride: library-system
+
+
+# =========================
+# SERVICE ACCOUNT (optional)
+# =========================
+
+serviceAccount:
+  create: false
+  automount: true
+
+
+# =========================
+# SERVICE CONFIG
+# =========================
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+
+# =========================
+# INGRESS (external access)
+# =========================
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: library.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+
+# =========================
+# SPRING BOOT ENVIRONMENT
+# =========================
+
+env:
+  SPRING_PROFILES_ACTIVE: prod
+
+
+# =========================
+# DATABASE CONFIG (MySQL)
+# =========================
+
+db:
+  url: jdbc:mysql://mysql:3306/library_db
+  username: root
+  password: root123
+
+
+# =========================
+# RESOURCE LIMITS
+# =========================
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+
+# =========================
+# HEALTH CHECKS
+# =========================
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: 8080
+  initialDelaySeconds: 20
+  periodSeconds: 10
+
+
+# =========================
+# AUTOSCALING (OPTIONAL BUT USEFUL)
+# =========================
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+
+# =========================
+# NODE PLACEMENT (optional)
+# =========================
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
