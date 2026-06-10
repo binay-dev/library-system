@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: mysql-secret
-  namespace: library
+  namespace: library-system
 type: Opaque
 data:
   mysql-root-password: cm9vdDEyMw==
@@ -12,7 +12,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
-  namespace: library
+  namespace: library-system
 spec:
   accessModes:
     - ReadWriteOnce
@@ -25,7 +25,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: library
+  namespace: library-system
 spec:
   replicas: 1
   selector:
@@ -62,7 +62,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql-service
-  namespace: library
+  namespace: library-system
 spec:
   selector:
     app: mysql
