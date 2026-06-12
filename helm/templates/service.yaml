@@ -1,15 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "bbspringboot-start.fullname" . }}
+  name: {{ .Values.fullnameOverride | default "library-system" }}
+
   labels:
-    {{- include "bbspringboot-start.labels" . | nindent 4 }}
+    app.kubernetes.io/name: library-system
+
 spec:
   type: {{ .Values.service.type }}
+
+  selector:
+    app.kubernetes.io/name: library-system
+
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: http
-  selector:
-    {{- include "bbspringboot-start.selectorLabels" . | nindent 4 }}

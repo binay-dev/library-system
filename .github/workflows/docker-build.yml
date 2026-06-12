@@ -1,4 +1,4 @@
-name: Docker Build & Push
+name: Docker Build & Push (GitOps)
 
 on:
   push:
@@ -7,22 +7,24 @@ on:
       - "src/**"
       - "pom.xml"
       - "Dockerfile"
+      - "helm/**"
+
+env:
+  DOCKER_IMAGE: ${{ secrets.DOCKER_USER }}/library-system
 
 jobs:
-
-  docker-build:
+  docker:
     runs-on: ubuntu-latest
 
     steps:
-
       # =========================
-      # 1. Checkout code
+      # Checkout code
       # =========================
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       # =========================
-      # 2. Setup Java (for Maven build)
+      # Setup Java 17
       # =========================
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -31,25 +33,45 @@ jobs:
           java-version: 17
 
       # =========================
-      # 3. Build JAR
+      # Build JAR
       # =========================
       - name: Build Spring Boot App
         run: mvn clean package -DskipTests
 
       # =========================
-      # 4. Login DockerHub
+      # Docker login
       # =========================
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKER_PASS }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
 
       # =========================
-      # 5. Build Docker Image
+      # Build Docker image (VERSIONED)
       # =========================
       - name: Build Docker Image
-        run: docker build -t ${{ secrets.DOCKER_USER }}/library-system:latest .
+        run: |
+          docker build -t $DOCKER_IMAGE:${{ github.sha }} .
 
       # =========================
-      # 6. Push Docker Image
+      # Push Docker image
       # =========================
       - name: Push Docker Image
-        run: docker push ${{ secrets.DOCKER_USER }}/library-system:latest
+        run: |
+          docker push $DOCKER_IMAGE:${{ github.sha }}
+
+      # =========================
+      # Update Helm values (GitOps trigger)
+      # =========================
+      - name: Update Helm values.yaml
+        run: |
+          sed -i "s/tag: .*/tag: ${{ github.sha }}/g" helm/library-system/values.yaml
+
+      # =========================
+      # Commit changes back to Git
+      # =========================
+      - name: Commit Helm update
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add helm/library-system/values.yaml
+          git commit -m "Update image tag to ${{ github.sha }}"
+          git push

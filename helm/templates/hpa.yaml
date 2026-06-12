@@ -3,8 +3,10 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ .Values.fullnameOverride | default "library-system" }}-hpa
+
   labels:
-    app: {{ .Values.fullnameOverride | default "library-system" }}
+    app.kubernetes.io/name: library-system
+
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -36,4 +38,4 @@ spec:
         - type: Percent
           value: 50
           periodSeconds: 60
-  {{- end }}
+{{- end }}

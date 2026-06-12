@@ -1,86 +1,72 @@
-# =========================
-# LIBRARY SYSTEM - HELM VALUES
-# =========================
-
 replicaCount: 2
-
 
 # =========================
 # IMAGE CONFIGURATION
 # =========================
-
 image:
-  repository: your-dockerhub-user/library-system
+  repository: binaydev/library-system
   pullPolicy: Always
   tag: "v1"
-
-imagePullSecrets: []
-
 
 # =========================
 # NAME OVERRIDES
 # =========================
-
 nameOverride: ""
 fullnameOverride: library-system
 
-
 # =========================
-# SERVICE ACCOUNT (optional)
+# SERVICE ACCOUNT
 # =========================
-
 serviceAccount:
   create: false
   automount: true
 
-
 # =========================
 # SERVICE CONFIG
 # =========================
-
 service:
   type: ClusterIP
   port: 80
   targetPort: 8080
 
-
 # =========================
-# INGRESS (external access)
+# INGRESS (disabled for now)
 # =========================
-
 ingress:
-  enabled: true
-  className: nginx
-  hosts:
-    - host: library.local
-      paths:
-        - path: /
-          pathType: Prefix
-  tls: []
+  enabled: false
 
+# =========================
+# HTTPROUTE (FIX FOR YOUR ERROR)
+# =========================
+httpRoute:
+  enabled: false
+  parentRefs: []
+  hostnames: []
+  rules: []
 
 # =========================
 # SPRING BOOT ENVIRONMENT
 # =========================
-
 env:
   SPRING_PROFILES_ACTIVE: prod
-
+  SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
+  SPRING_JPA_PROPERTIES_HIBERNATE_TEMP_USE_JDBC_METADATA_DEFAULTS: "false"
 
 # =========================
-# DATABASE CONFIG (MySQL)
+# DATABASE CONFIG
 # =========================
-
 db:
-  url: jdbc:mysql://mysql:3306/library_db
-  username: root
-  password: root123
-
+  SPRING_DATASOURCE_URL: jdbc:mysql://mysql-service:3306/library_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  SPRING_DATASOURCE_USERNAME: root
+  SPRING_DATASOURCE_PASSWORD: root123
+  
+  SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "0"
+  SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: "30000"
+  SPRING_DATASOURCE_HIKARI_VALIDATION_TIMEOUT: "5000"
 
 # =========================
 # RESOURCE LIMITS
 # =========================
-
 resources:
   requests:
     cpu: 250m
@@ -91,41 +77,17 @@ resources:
 
 
 # =========================
-# HEALTH CHECKS
+# AUTOSCALING (DISABLED FOR NOW)
 # =========================
-
-livenessProbe:
-  httpGet:
-    path: /actuator/health/liveness
-    port: 8080
-  initialDelaySeconds: 30
-  periodSeconds: 10
-
-readinessProbe:
-  httpGet:
-    path: /actuator/health/readiness
-    port: 8080
-  initialDelaySeconds: 20
-  periodSeconds: 10
-
-
-# =========================
-# AUTOSCALING (OPTIONAL BUT USEFUL)
-# =========================
-
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 2
   maxReplicas: 5
   targetCPUUtilizationPercentage: 70
 
-
 # =========================
-# NODE PLACEMENT (optional)
+# NODE PLACEMENT
 # =========================
-
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}

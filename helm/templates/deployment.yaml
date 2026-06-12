@@ -3,16 +3,20 @@ kind: Deployment
 metadata:
   name: {{ .Values.fullnameOverride | default .Release.Name }}
   labels:
-    app: {{ .Values.fullnameOverride | default "library-system" }}
+    app.kubernetes.io/name: library-system
+
 spec:
   replicas: {{ .Values.replicaCount }}
+
   selector:
     matchLabels:
-      app: {{ .Values.fullnameOverride | default "library-system" }}
+      app.kubernetes.io/name: library-system
+
   template:
     metadata:
       labels:
-        app: {{ .Values.fullnameOverride | default "library-system" }}
+        app.kubernetes.io/name: library-system
+
     spec:
       containers:
         - name: library-system
@@ -27,19 +31,25 @@ spec:
           # =========================
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: {{ .Values.env.SPRING_PROFILES_ACTIVE | quote }}
+              value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
 
-            - name: DB_URL
-              value: {{ .Values.db.url | quote }}
+            - name: SPRING_DATASOURCE_URL
+              value: "{{ .Values.db.SPRING_DATASOURCE_URL }}"
 
-            - name: DB_USERNAME
-              value: {{ .Values.db.username | quote }}
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "{{ .Values.db.SPRING_DATASOURCE_USERNAME }}"
 
-            - name: DB_PASSWORD
-              value: {{ .Values.db.password | quote }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "{{ .Values.db.SPRING_DATASOURCE_PASSWORD  }}"
+              
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_TEMP_USE_JDBC_METADATA_DEFAULTS
+              value: "{{ .Values.env.SPRING_JPA_PROPERTIES_HIBERNATE_TEMP_USE_JDBC_METADATA_DEFAULTS }}"
+
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: "{{ .Values.env.SPRING_JPA_DATABASE_PLATFORM }}"  
 
           # =========================
-          # RESOURCE LIMITS
+          # RESOURCES
           # =========================
           resources:
             requests:
@@ -50,18 +60,36 @@ spec:
               memory: {{ .Values.resources.limits.memory }}
 
           # =========================
-          # HEALTH CHECKS
-          # =========================
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            # STARTUP PROBE
+            # =========================
+            startupProbe:
+              httpGet:
+                path: /actuator/health/liveness
+                port: 8080
+              periodSeconds: 10
+              failureThreshold: 60
+              timeoutSeconds: 5
 
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 8080
-            initialDelaySeconds: 20
-            periodSeconds: 10
+            # =========================
+            # READINESS PROBE
+            # =========================
+            readinessProbe:
+              httpGet:
+                path: /actuator/health/readiness
+                port: 8080
+              initialDelaySeconds: 20
+              periodSeconds: 10
+              failureThreshold: 3
+              timeoutSeconds: 5
+
+            # =========================
+            # LIVENESS PROBE
+            # =========================
+            livenessProbe:
+              httpGet:
+                path: /actuator/health/liveness
+                port: 8080
+              initialDelaySeconds: 60
+              periodSeconds: 20
+              failureThreshold: 3
+              timeoutSeconds: 5

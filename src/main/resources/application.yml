@@ -3,9 +3,9 @@ spring:
     name: library-system
 
   datasource:
-    url: jdbc:mysql://mysql-service:3306/library_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: root123
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql-service:3306/library_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:root123}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     hikari:
@@ -39,11 +39,16 @@ management:
   endpoint:
     health:
       show-details: always
+      probes:
+        enabled: true
 
   endpoints:
     web:
       exposure:
         include: health,info
+  health:
+    probes:
+      enabled: true     
 
 logging:
   level:
