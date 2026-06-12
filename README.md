@@ -56,26 +56,55 @@ The project follows:
 - Domain Driven Design (DDD)
 - Clean Architecture principles
 
+# GitOps Deployment (Argo CD + Helm + Kubernetes)
+This project demonstrates a GitOps-based deployment pipeline for a Spring Boot microservice using:
+Spring Boot 3.x
+MySQL (Kubernetes Deployment)
+Docker
+Helm Charts
+GitHub Actions (CI)
+Argo CD (CD)
+Kubernetes
+<img width="1493" height="627" alt="Screenshot 2026-06-12 224557" src="https://github.com/user-attachments/assets/45ba7240-8a73-4a9a-8818-bddc6d652b0a" />
+
+# Flow Git Push (main)
+   ↓
+GitHub Actions (CI)
+   ↓
+Build JAR + Docker Image
+   ↓
+Push Image to Docker Hub
+   ↓
+Argo CD (GitOps)
+   ↓
+Helm Chart Deployment
+   ↓
+Kubernetes Cluster
+
+## 📁 Project Structure
+
 ```text
-src/main/java/com/library/api
+library-system/
 │
-├── application
-│   ├── port
-│   │   ├── in
-│   │   └── out
-│   ├── service
-│   └── response
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 │
-├── domain
-│   ├── model
-│   ├── valueobject
-│   ├── exception
-│   └── constant
+├── helm/
+│   ├── Chart.yaml
+│   ├── values.yaml
+│   └── templates/
+│       ├── deployment.yaml
+│       ├── service.yaml
+│       ├── hpa.yaml
+│       ├── ingress.yaml
+│       └── httproute.yaml
+├── argocd/
+     ├── library-system-app.yaml
+├── k8s/
+├── src/
+│   └── main/java/...
 │
-├── infrastructure
-│   ├── adapter
-│   │   ├── in
-│   │   └── out
-│   └── config
-│
-└── LibrarySystemApplication
+├── Dockerfile
+└── pom.xml
+```
