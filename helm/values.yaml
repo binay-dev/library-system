@@ -6,7 +6,7 @@ replicaCount: 2
 image:
   repository: binaydev/library-system
   pullPolicy: Always
-  tag: "v1"
+  tag: "1.0.1"
 
 # =========================
 # NAME OVERRIDES
