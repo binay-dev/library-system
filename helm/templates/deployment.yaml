@@ -40,13 +40,13 @@ spec:
               value: "{{ .Values.db.SPRING_DATASOURCE_USERNAME }}"
 
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "{{ .Values.db.SPRING_DATASOURCE_PASSWORD  }}"
-              
+              value: "{{ .Values.db.SPRING_DATASOURCE_PASSWORD }}"
+
             - name: SPRING_JPA_PROPERTIES_HIBERNATE_TEMP_USE_JDBC_METADATA_DEFAULTS
               value: "{{ .Values.env.SPRING_JPA_PROPERTIES_HIBERNATE_TEMP_USE_JDBC_METADATA_DEFAULTS }}"
 
             - name: SPRING_JPA_DATABASE_PLATFORM
-              value: "{{ .Values.env.SPRING_JPA_DATABASE_PLATFORM }}"  
+              value: "{{ .Values.env.SPRING_JPA_DATABASE_PLATFORM }}"
 
           # =========================
           # RESOURCES
@@ -60,36 +60,36 @@ spec:
               memory: {{ .Values.resources.limits.memory }}
 
           # =========================
-            # STARTUP PROBE
-            # =========================
-            startupProbe:
-              httpGet:
-                path: /actuator/health/liveness
-                port: 8080
-              periodSeconds: 10
-              failureThreshold: 60
-              timeoutSeconds: 5
+          # STARTUP PROBE
+          # =========================
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 60
+            timeoutSeconds: 5
 
-            # =========================
-            # READINESS PROBE
-            # =========================
-            readinessProbe:
-              httpGet:
-                path: /actuator/health/readiness
-                port: 8080
-              initialDelaySeconds: 20
-              periodSeconds: 10
-              failureThreshold: 3
-              timeoutSeconds: 5
+          # =========================
+          # READINESS PROBE
+          # =========================
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
 
-            # =========================
-            # LIVENESS PROBE
-            # =========================
-            livenessProbe:
-              httpGet:
-                path: /actuator/health/liveness
-                port: 8080
-              initialDelaySeconds: 60
-              periodSeconds: 20
-              failureThreshold: 3
-              timeoutSeconds: 5
+          # =========================
+          # LIVENESS PROBE
+          # =========================
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
+            timeoutSeconds: 5
